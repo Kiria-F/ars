@@ -15,17 +15,17 @@ jobs:
     steps:
     
     - name: Kill an existing container
-      run: docker container kill allrensys
+      run: docker container kill ars
 
     - name: Remove old container
       run: docker container prune -f
     
     - uses: actions/checkout@v3
     - name: Build a new image
-      run: docker build . --file Dockerfile --tag allrensys
+      run: docker build . --file Dockerfile --tag ars
 
     - name: Run the Docker image in a new container
-      run: docker run -d allrensys
+      run: docker run --name ars -d ars
 
     - name: Remove unused images
       run: docker image prune -f
