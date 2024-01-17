@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image CI/CD
 
 on:
   push:
@@ -8,20 +8,24 @@ on:
 
 jobs:
 
-  build:
+  CI-CD:
 
     runs-on: self-hosted
 
     steps:
+    
+    - name: Kill an existing container
+      run: docker container kill allrensys
+
+    - name: Remove old container
+      run: docker container prune -f
+    
     - uses: actions/checkout@v3
-    - name: Build the Docker image
+    - name: Build a new image
       run: docker build . --file Dockerfile --tag allrensys
 
-  run:
-
-    runs-on: self-hosted
-
-    steps:
     - name: Run the Docker image in a new container
       run: docker run -d allrensys
-    
+
+    - name: Remove unused images
+      run: docker image prune -f
