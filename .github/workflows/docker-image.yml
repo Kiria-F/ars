@@ -25,7 +25,7 @@ jobs:
       run: docker build . --file Dockerfile --tag ars
 
     - name: Run the Docker image in a new container
-      run: docker run -p 8080:80 --name ars -d ars
+      run: docker run -p 80:80 --name ars -d ars
 
     - name: Remove unused images
       run: docker image prune -f
