@@ -5,7 +5,6 @@ public class ClientTestService : IClientTestService {
 
     public uint Trigger() {
         _flag = !_flag;
-        Console.WriteLine(_flag);
         return _flag ? 0U : 1U;
     }
 }
