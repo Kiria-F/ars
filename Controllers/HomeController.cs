@@ -1,23 +1,13 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ARS.Models;
-using ARS.Services.Interfaces;
 
 namespace ARS.Controllers
 {
 
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IRandomGeneratorService _randomGeneratorService;
-
-        public HomeController(
-            ILogger<HomeController> logger,
-            IRandomGeneratorService randomGeneratorService)
-        {
-            _logger = logger;
-            _randomGeneratorService = randomGeneratorService;
-        }
+        private readonly ILogger<HomeController> _logger = logger;
 
         public IActionResult Index()
         {
