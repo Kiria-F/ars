@@ -15,17 +15,5 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
-    - name: Build a new image
-      run: docker build . --file Dockerfile --tag ars
-    
-    - name: Kill an existing container if it's running
-      run: '[ $(docker ps -q -f name=ars) ] && docker container kill ars || echo nothing'
-
-    - name: Remove unused containers
-      run: docker container prune -f
-
-    - name: Remove unused images
-      run: docker image prune -f
-
-    - name: Run the image in a new container
-      run: docker run -p 80:8080 -p 443:443 --name ars -d ars
+    - name: Compose up
+      run: docker-compose up --build -d
