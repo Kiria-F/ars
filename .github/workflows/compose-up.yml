@@ -1,4 +1,4 @@
-name: CI/CD
+name: Compose Up
 
 on:
   push:
@@ -8,20 +8,14 @@ on:
 
 jobs:
 
-  CI-CD:
+  compose-up:
 
     runs-on: self-hosted
 
     steps:
     
-    - name: pre test
-      run: pwd && ls -l -a
-    
     - name: load app settings
       run: "echo << 'EOF' > appsettings.json ${{ secrets.APP_SETTINGS }}"
-
-    - name: pre test
-      run: pwd && ls -l -a
 
     - uses: actions/checkout@v3
     - name: Compose up

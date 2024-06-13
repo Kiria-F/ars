@@ -1,0 +1,18 @@
+﻿name: Compose Down
+
+on:
+  push:
+    branches: [ "master", "identity-feature" ]
+
+  workflow_dispatch:
+
+jobs:
+
+  compose-down:
+
+    runs-on: self-hosted
+
+    steps:
+
+      - name: compose down
+        run: "docker compose down"
