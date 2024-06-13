@@ -1,9 +1,6 @@
 ﻿name: Compose Down
 
 on:
-  push:
-    branches: [ "master", "identity-feature" ]
-
   workflow_dispatch:
 
 jobs:
