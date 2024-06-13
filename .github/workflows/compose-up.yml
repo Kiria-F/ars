@@ -19,12 +19,12 @@ jobs:
     - name: load app settings
       run: "echo << 'EOF' > appsettings.json ${{ secrets.APP_SETTINGS }}"
 
+    - name: Compose up
+      run: "docker compose up --build -d"
+
     - name: check docker container
       run: "docker compose ps"
 
-    - name: Compose up
-      run: "docker compose up --build -d"
-    
     - name: add migration
       run: "docker compose exec ars-app-1 dotnet ef migrations add"
 
