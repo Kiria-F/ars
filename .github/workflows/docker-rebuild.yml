@@ -20,6 +20,9 @@ jobs:
     - name: load app settings
       run: "echo ${{ secrets.APP_SETTINGS }} > appsettings.json"
 
+    - name: pre test
+      run: pwd && ls -l -a
+
     - uses: actions/checkout@v3
     - name: Compose up
       run: "docker compose up --build -d"
