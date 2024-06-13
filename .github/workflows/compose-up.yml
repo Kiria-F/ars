@@ -13,11 +13,12 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    
+
+    - uses: actions/checkout@v3
+      
     - name: load app settings
       run: "echo << 'EOF' > appsettings.json ${{ secrets.APP_SETTINGS }}"
 
-    - uses: actions/checkout@v3
     - name: Compose up
       run: "docker compose up --build -d"
       
