@@ -14,7 +14,10 @@ jobs:
 
     steps:
     
-    - name: load appsettings
+    - name: pre test
+      run: pwd && ls -l -a
+    
+    - name: load app settings
       run: "echo ${{ secrets.APP_SETTINGS }} > appsettings.json"
 
     - uses: actions/checkout@v3
