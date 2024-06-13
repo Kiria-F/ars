@@ -1,12 +1,10 @@
-﻿version: '2'
-
-services:
-  ars:
-    image: 'ars'
+﻿services:
+  app:
+    image: ars
+    restart: on-failure
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - '80:8080'
       - '443'
-    restart: on-failure
