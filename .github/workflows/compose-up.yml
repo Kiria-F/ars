@@ -26,7 +26,7 @@ jobs:
       run: "docker compose up --build -d"
 
     - name: wait for docker container
-      run: ""
+      run: 'until [ -n "$(docker container ls -f name=ars-app | grep Up)" ]; do echo "waiting for container"; done'
 
     - name: add migration
       run: "docker compose exec ars-app-1 dotnet ef migrations add"
