@@ -22,8 +22,11 @@ jobs:
     - name: Compose up
       run: "docker compose up --build -d"
 
+    - name: check docker container
+      run: "sleep 5s && docker ps"
+
     - name: add migration
-      run: "dotnet ef migrations add"
+      run: "docker compose exec ars-app-1 dotnet ef migrations add"
 
     - name: update database
-      run: "dotnet ef database update"
+      run: "docker compose exec ars-app-1 dotnet ef database update"
