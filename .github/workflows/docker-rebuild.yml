@@ -22,9 +22,6 @@ jobs:
 
     - name: pre test
       run: pwd && ls -l -a
-    
-    - name: show app settings
-      run: cat appsettings.json
 
     - uses: actions/checkout@v3
     - name: Compose up
