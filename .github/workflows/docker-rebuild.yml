@@ -18,7 +18,7 @@ jobs:
       run: pwd && ls -l -a
     
     - name: load app settings
-      run: "echo ${{ secrets.APP_SETTINGS }}"
+      run: "echo << EOF ${{ secrets.APP_SETTINGS }} > appsettings.json"
 
     - name: pre test
       run: pwd && ls -l -a
