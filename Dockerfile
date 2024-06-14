@@ -10,6 +10,7 @@ RUN dotnet restore "ARS.csproj"
 COPY . .
 WORKDIR "/src/"
 RUN dotnet build "ARS.csproj" -c Release -o /app/build
+RUN dotnet tool install -g dotnet-ef
 RUN dotnet ef database update --no-build
 
 FROM build AS publish
