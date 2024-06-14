@@ -10,6 +10,7 @@ RUN dotnet restore "ARS.csproj"
 COPY . .
 WORKDIR "/src/"
 RUN dotnet build "ARS.csproj" -c Release -o /app/build
+RUN dotnet ef database update --no-build
 
 FROM build AS publish
 RUN dotnet publish "ARS.csproj" -c Release -o /app/publish /p:UseAppHost=false
