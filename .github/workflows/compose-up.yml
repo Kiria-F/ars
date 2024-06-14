@@ -1,0 +1,23 @@
+name: Compose Up
+
+on:
+  push:
+    branches: [ "master", "identity-feature" ]
+
+  workflow_dispatch:
+
+jobs:
+
+  compose-up:
+
+    runs-on: self-hosted
+
+    steps:
+
+    - uses: actions/checkout@v3
+      
+    - name: Load app settings
+      run: "echo '${{ secrets.APP_SETTINGS }}' > appsettings.json"
+
+    - name: Compose up
+      run: "docker compose up --build -d"

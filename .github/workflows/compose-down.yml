@@ -1,0 +1,15 @@
+﻿name: Compose Down
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  compose-down:
+
+    runs-on: self-hosted
+
+    steps:
+
+      - name: Compose down
+        run: "docker compose down"
