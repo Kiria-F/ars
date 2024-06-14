@@ -1,12 +1,8 @@
 using ARS.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ARS.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<User, UserRole, long>(options) {
-    
-    public DbSet<User> Users { get; set; }
-    public DbSet<UserRole> UserRoles { get; set; }
-};
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): DbContext(options) {
+    public DbSet<Umbrella> Umbrellas { get; set; } = null!;
+}
