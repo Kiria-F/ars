@@ -9,7 +9,6 @@ COPY ["ARS.csproj", "./"]
 RUN dotnet restore "ARS.csproj"
 COPY . .
 RUN dotnet build "ARS.csproj" -c Release -o /app/build
-RUN dotnet tool install --create-manifest-if-needed dotnet-ef
 
 FROM build AS publish
 RUN dotnet publish "ARS.csproj" -c Release -o /app/publish /p:UseAppHost=false
