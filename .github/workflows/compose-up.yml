@@ -15,5 +15,9 @@ jobs:
     steps:
 
     - uses: actions/checkout@v3
+      
+    - name: load app settings
+      run: "echo '${{ secrets.APP_SETTINGS }}' > appsettings.json"
+
     - name: Compose up
       run: "docker compose up --build -d"
