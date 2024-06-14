@@ -1,8 +1,6 @@
 ﻿name: Compose Down
 
 on:
-  push:
-    branches: []
   workflow_dispatch:
 
 jobs:
