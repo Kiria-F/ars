@@ -1,4 +1,4 @@
-﻿name: Compose Down
+name: Compose Down
 
 on:
   workflow_dispatch:
