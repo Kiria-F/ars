@@ -6,6 +6,5 @@ riderModule.iml
 /.idea/
 /.vs/
 /ARS.csproj.user
-/appsettings.json
-/appsettings.Development.json
+/appsettings*.json
 /personal/
