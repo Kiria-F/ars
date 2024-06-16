@@ -13,6 +13,12 @@ public class UserLoginDto {
     public string Password { get; set; } = null!;
 }
 
+public class UserRegisterDto {
+    public string Username { get; set; } = null!;
+    public string Name { get; set; } = null!;
+    public string Password { get; set; } = null!;
+}
+
 public class UserViewDto {
     public string Username { get; set; } = null!;
     public string Name { get; set; } = null!;

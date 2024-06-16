@@ -16,4 +16,20 @@ public class AuthController(AuthService authService) : Controller {
             return Unauthorized();
         return Ok(new { token = authService.GenerateToken(userLogin) });
     }
+    [AllowAnonymous]
+    [HttpPost]
+    [Route("token-login")]
+    public IActionResult LoginByToken([FromBody] string token) {
+        var user = authService.Authenticate(token);
+        if (user is null)
+            return Unauthorized();
+        return Ok(new { user.Id, user.Name });
+    }
+    
+    [AllowAnonymous]
+    [HttpPost]
+    [Route("register")]
+    public IActionResult Register([FromBody] UserRegisterDto userRegister) {
+        return Ok("Id: " + authService.Register(userRegister).Id);
+    }
 }
