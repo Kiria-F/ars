@@ -12,8 +12,12 @@ public class AuthService(
     ApplicationDbContext context,
     TokenValidationParameters tokenValidationParameters) {
     public UserModel? Authenticate(UserLoginDto userLogin) {
-        var user = context.Users.FirstOrDefault(u =>
-            u.Username == userLogin.Username && u.Password == userLogin.Password);
+        var user = context.Users.FirstOrDefault(u => u.Username == userLogin.Username);
+        var foundPasswordHash = user?.PasswordHash;
+        if (user is not null) {
+            var res = UserModel.VerifyPassword(userLogin.Password, user.PasswordHash);
+        }
+        if (user is null || !UserModel.VerifyPassword(userLogin.Password, user.PasswordHash)) return null;
         return user;
     }
 
@@ -21,16 +25,12 @@ public class AuthService(
         var tokenHandler = new JwtSecurityTokenHandler();
         tokenHandler.ValidateToken(jwtToken, tokenValidationParameters, out var validatedToken);
         var jwtTokenData = (JwtSecurityToken) validatedToken;
-        var userId = int.Parse(jwtTokenData.Claims.First(t => t.Type == "Username").Value);
-        return context.Users.FirstOrDefault(u => u.Id == userId);
+        var username = jwtTokenData.Claims.First(t => t.Type == "username").Value;
+        return context.Users.FirstOrDefault(u => u.Username == username);
     }
 
     public UserModel Register(UserRegisterDto userRegister) {
-        var user = new UserModel {
-            Name = userRegister.Name,
-            Username = userRegister.Username,
-            Password = userRegister.Password
-        };
+        var user = userRegister.ToUserModel();
         var addedEntity = context.Users.Add(user);
         user.Id = addedEntity.Entity.Id;
         context.SaveChanges();

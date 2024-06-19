@@ -1,11 +1,16 @@
-﻿namespace ARS.Models; 
+﻿namespace ARS.Models;
 
 public class UserModel : BaseModel {
     public string Username { get; set; } = null!;
-    public string Password { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
     public string Name { get; set; } = null!;
     public byte Agents { get; set; }
     public RoleType Role { get; set; }
+
+    public static string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
+
+    public static bool VerifyPassword(string password, string passwordHash) =>
+        BCrypt.Net.BCrypt.Verify(password, passwordHash);
 }
 
 public class UserLoginDto {
@@ -17,6 +22,14 @@ public class UserRegisterDto {
     public string Username { get; set; } = null!;
     public string Name { get; set; } = null!;
     public string Password { get; set; } = null!;
+
+    public UserModel ToUserModel() {
+        return new UserModel {
+            Name = Name,
+            Username = Username,
+            PasswordHash = UserModel.HashPassword(Password)
+        };
+    }
 }
 
 public class UserViewDto {
