@@ -19,9 +19,7 @@
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8081:8080'
-    extra_hosts:
-      -  "localhost:127.0.0.1"
+      - '12345:8080'
     
   db-updater:
     image: ars-db-updater
