@@ -12,14 +12,14 @@
     volumes:
       - 'postgres-data:/var/lib/postgresql/data'
 
-#  app:
-#    image: ars
-#    restart: on-failure
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - '12345:8080'
+  app:
+    image: ars
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '12345:8080'
     
   db-updater:
     image: ars-db-updater
