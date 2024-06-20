@@ -20,12 +20,6 @@
       dockerfile: Dockerfile
     ports:
       - '8081:8080'
-    
-  db-updater:
-    image: ars-db-updater
-    build:
-      context: .
-      dockerfile: Dockerfile.db-updater
 
 volumes:
   postgres-data:
