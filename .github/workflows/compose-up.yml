@@ -21,4 +21,4 @@ jobs:
       run: "echo '${{ secrets.APP_SETTINGS }}' > appsettings.json"
 
     - name: Compose up
-      run: "docker compose up --build -d"
+      run: "docker compose up -d"  # --build
