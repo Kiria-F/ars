@@ -30,6 +30,9 @@ public class AuthController(AuthService authService) : Controller {
     [HttpPost]
     [Route("register")]
     public IActionResult Register([FromBody] UserRegisterDto userRegister) {
-        return Ok("Id: " + authService.Register(userRegister).Id);
+        var user = authService.Register(userRegister);
+        if (user is null)
+            return BadRequest();
+        return Ok("Id: " + user.Id);
     }
 }
