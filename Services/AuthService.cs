@@ -13,10 +13,6 @@ public class AuthService(
     TokenValidationParameters tokenValidationParameters) {
     public UserModel? Authenticate(UserLoginDto userLogin) {
         var user = context.Users.FirstOrDefault(u => u.Username == userLogin.Username);
-        var foundPasswordHash = user?.PasswordHash;
-        if (user is not null) {
-            var res = UserModel.VerifyPassword(userLogin.Password, user.PasswordHash);
-        }
         if (user is null || !UserModel.VerifyPassword(userLogin.Password, user.PasswordHash)) return null;
         return user;
     }
@@ -29,12 +25,14 @@ public class AuthService(
         return context.Users.FirstOrDefault(u => u.Username == username);
     }
 
-    public UserModel Register(UserRegisterDto userRegister) {
-        var user = userRegister.ToUserModel();
-        var addedEntity = context.Users.Add(user);
-        user.Id = addedEntity.Entity.Id;
+    public UserModel? Register(UserRegisterDto userRegister) {
+        var newUser = userRegister.ToUserModel();
+        var foundUser = context.Users.FirstOrDefault(u => u.Username == newUser.Username);
+        if (foundUser is not null) return null;
+        var addedEntity = context.Users.Add(newUser);
+        newUser.Id = addedEntity.Entity.Id;
         context.SaveChanges();
-        return user;
+        return newUser;
     }
 
     public string GenerateToken(UserLoginDto userLogin) {
