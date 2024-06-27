@@ -6,11 +6,11 @@
     # set shared memory limit when using docker-compose
     shm_size: 128mb
     environment:
-      POSTGRES_PASSWORD: '%DB_PASSWORD%'
+      POSTGRES_PASSWORD: %DB_PASSWORD%
     ports:
-      - '5432:5432'
+      - 5432:5432
     volumes:
-      - '%DB_VOLUME%'
+      - %DB_VOLUME%
 
   app:
     image: ars
@@ -19,7 +19,7 @@
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8081:8080'
+      - 8081:8080
 
 volumes:
   postgres-data:

@@ -1,5 +1,5 @@
 ﻿$secrets = Get-Content -Path "secrets.json" | ConvertFrom-Json
-foreach ($config in $secrets.remote) {
+foreach ($config in $secrets.local) {
     $filename = $config.filename
     $target = $config.target
     $keys = $config.keys | ConvertTo-Json | ConvertFrom-Json -AsHashtable
@@ -9,3 +9,4 @@ foreach ($config in $secrets.remote) {
     }
     $content | Set-Content -Path $target
 }
+Write-Output "Done"
