@@ -8,4 +8,5 @@ riderModule.iml
 /ARS.csproj.user
 /appsettings.json
 /appsettings.*.json
+/docker-compose.yml
 /secrets.json
