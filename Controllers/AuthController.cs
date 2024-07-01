@@ -11,28 +11,29 @@ public class AuthController(AuthService authService) : Controller {
     [HttpPost]
     [Route("login")]
     public IActionResult Login([FromBody] UserLoginDto userLogin) {
-        var user = authService.Authenticate(userLogin);
-        if (user is null)
-            return Unauthorized();
-        return Ok(new { token = authService.GenerateToken(userLogin) });
+        var userResult = authService.Authenticate(userLogin);
+        if (userResult.Failure)
+            return Unauthorized(userResult.Message);
+        return Ok(new { token = authService.GenerateToken(userLogin.Username) });
     }
+
     [AllowAnonymous]
     [HttpPost]
     [Route("token-login")]
     public IActionResult LoginByToken([FromBody] string token) {
-        var user = authService.Authenticate(token);
-        if (user is null)
-            return Unauthorized();
-        return Ok(new { user.Id, user.Name });
+        var userResult = authService.Authenticate(token);
+        if (userResult.Failure)
+            return Unauthorized(userResult.Message);
+        return Ok(new { name = userResult.Value!.Name });
     }
-    
+
     [AllowAnonymous]
     [HttpPost]
     [Route("register")]
     public IActionResult Register([FromBody] UserRegisterDto userRegister) {
-        var user = authService.Register(userRegister);
-        if (user is null)
-            return BadRequest();
-        return Ok("Id: " + user.Id);
+        var userResult = authService.Register(userRegister);
+        if (userResult.Failure)
+            return BadRequest(userResult.Message);
+        return Ok(new { token = authService.GenerateToken(userResult.Value!.Username) });
     }
 }

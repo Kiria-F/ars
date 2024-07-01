@@ -1,51 +1,73 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using ARS.Data;
+using ARS.Gateways;
 using ARS.Models;
+using ARS.Tools;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ARS.Services;
 
 public class AuthService(
     IConfiguration config,
-    ApplicationDbContext context,
-    TokenValidationParameters tokenValidationParameters) {
-    public UserModel? Authenticate(UserLoginDto userLogin) {
-        var user = context.Users.FirstOrDefault(u => u.Username == userLogin.Username);
-        if (user is null || !UserModel.VerifyPassword(userLogin.Password, user.PasswordHash)) return null;
-        return user;
+    ILogger<AuthService> logger,
+    UserGateway userGateway,
+    TokenValidationParameters tokenValidationParameters,
+    SessionService sessionService) {
+    public Result<UserModel> Authenticate(UserLoginDto userLogin) {
+        var user = userGateway.GetUserByUsername(userLogin.Username);
+        if (user is null)
+            return Result<UserModel>.Fail("User not found");
+        if (!UserModel.VerifyPassword(userLogin.Password, user.PasswordHash))
+            return Result<UserModel>.Fail("Wrong password");
+        sessionService.OpenSession(user.Id);
+        return Result.Ok(user);
     }
 
-    public UserModel? Authenticate(string jwtToken) {
+    public Result<UserModel> Authenticate(string token) {
         var tokenHandler = new JwtSecurityTokenHandler();
-        tokenHandler.ValidateToken(jwtToken, tokenValidationParameters, out var validatedToken);
-        var jwtTokenData = (JwtSecurityToken) validatedToken;
+        SecurityToken validatedToken;
+        try {
+            tokenHandler.ValidateToken(token, tokenValidationParameters, out validatedToken);
+        } catch (ArgumentNullException) {
+            return Result<UserModel>.Fail("Missing token");
+        } catch (SecurityTokenMalformedException) {
+            return Result<UserModel>.Fail("Invalid token format");
+        } catch (SecurityTokenExpiredException) {
+            return Result<UserModel>.Fail("Token expired");
+        } catch (SecurityTokenNoExpirationException) {
+            return Result<UserModel>.Fail("Token has no expiration");
+        } catch (Exception e) {
+            logger.LogWarning(e.GetType().ToString());
+            return Result<UserModel>.Fail("Invalid token");
+        }
+        var jwtTokenData = (JwtSecurityToken)validatedToken;
         var username = jwtTokenData.Claims.First(t => t.Type == "username").Value;
-        return context.Users.FirstOrDefault(u => u.Username == username);
+        var user = userGateway.GetUserByUsername(username);
+        if (user is null) return Result<UserModel>.Fail("User not found");
+        sessionService.OpenSession(user.Id);
+        return Result.Ok(user);
     }
 
-    public UserModel? Register(UserRegisterDto userRegister) {
+    public Result<UserModel> Register(UserRegisterDto userRegister) {
         var newUser = userRegister.ToUserModel();
-        var foundUser = context.Users.FirstOrDefault(u => u.Username == newUser.Username);
-        if (foundUser is not null) return null;
-        var addedEntity = context.Users.Add(newUser);
-        newUser.Id = addedEntity.Entity.Id;
-        context.SaveChanges();
-        return newUser;
+        var foundUser = userGateway.GetUserByUsername(newUser.Username);
+        if (foundUser is not null) return Result<UserModel>.Fail("User already exists");
+        var addedEntity = userGateway.AddUser(newUser);
+        sessionService.OpenSession(addedEntity.Id);
+        return Result.Ok(addedEntity);
     }
 
-    public string GenerateToken(UserLoginDto userLogin) {
+    public string GenerateToken(string username) {
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
         var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
         var claims = new[] {
-            new Claim("username", userLogin.Username),
-            new Claim("test", "some text")
+            new Claim("username", username)
         };
         var token = new JwtSecurityToken(config["Jwt:Issuer"],
             config["Jwt:Audience"],
             claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.Now.AddMinutes(60),
             signingCredentials: credentials);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

@@ -2,6 +2,7 @@ using System.Text;
 using ARS;
 using ARS.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -12,8 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 var tokenValidationParameters = new TokenValidationParameters {
     ValidateIssuer = false,
-    ValidateAudience = true,
-    ValidateLifetime = true,
+    ValidateAudience = false,
+    ValidateLifetime = false,
     ValidateIssuerSigningKey = true,
     ValidIssuer = builder.Configuration["Jwt:Issuer"],
     ValidAudience = builder.Configuration["Jwt:Audience"],
@@ -43,6 +44,19 @@ builder.Services.AddSwaggerGen(options => {
     });
 });
 
+builder.Services.AddHttpLogging(logging => {
+    logging.LoggingFields = HttpLoggingFields.RequestPath |
+                            HttpLoggingFields.ResponseStatusCode |
+                            HttpLoggingFields.RequestBody |
+                            HttpLoggingFields.ResponseBody;
+    logging.RequestHeaders.Add("sec-ch-ua");
+    logging.ResponseHeaders.Add("MyResponseHeader");
+    logging.MediaTypeOptions.AddText("application/javascript");
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+    logging.CombineLogs = true;
+});
+
 Di.Build(builder);
 
 var app = builder.Build();
@@ -59,7 +73,6 @@ using (var scope = app.Services.CreateScope()) {
     db.Database.Migrate();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
@@ -69,4 +82,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseHttpLogging();
 app.Run();
