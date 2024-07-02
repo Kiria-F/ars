@@ -1,10 +1,22 @@
 ﻿#!/usr/bin/bash
 
 for file_i in $( seq 0 $(( $(jq -r ".[\"$1\"] | length" secrets.json ) - 1 )) ); do
+    target=$( jq -r ".[\"$1\"][$file_i][\"target\"]" secrets.json )
+    if [[ -e "$target" ]]; then
+      rm "$target"
+    fi
+done
+for file_i in $( seq 0 $(( $(jq -r ".[\"shared\"] | length" secrets.json ) - 1 )) ); do
+    target=$( jq -r ".[\"shared\"][$file_i][\"target\"]" secrets.json )
+    if [[ -e "$target" ]]; then
+      rm "$target"
+    fi
+done
+for file_i in $( seq 0 $(( $(jq -r ".[\"$1\"] | length" secrets.json ) - 1 )) ); do
     filename=$( jq -r ".[\"$1\"][$file_i][\"filename\"]" secrets.json )
     target=$( jq -r ".[\"$1\"][$file_i][\"target\"]" secrets.json )
     keys_count=$( jq -r ".[\"$1\"][$file_i][\"keys\"] | length" secrets.json )
-    if [ ! -s "target" ]; then
+    if [[ ! -e "$target" ]]; then
       cp "$filename" "$target"
     fi
     for key_i in $( seq 0 $(( keys_count - 1 )) ); do
@@ -18,7 +30,7 @@ for file_i in $( seq 0 $(( $(jq -r ".[\"shared\"] | length" secrets.json ) - 1 )
     filename=$( jq -r ".[\"shared\"][$file_i][\"filename\"]" secrets.json )
     target=$( jq -r ".[\"shared\"][$file_i][\"target\"]" secrets.json )
     keys_count=$( jq -r ".[\"shared\"][$file_i][\"keys\"] | length" secrets.json )
-    if [ ! -s "target" ]; then
+    if [[ ! -e "$target" ]]; then
       cp "$filename" "$target"
     fi
     for key_i in $( seq 0 $(( keys_count - 1 )) ); do
