@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,20 @@ builder.Services.AddHttpLogging(logging => {
     logging.CombineLogs = true;
 });
 
+builder.Services.AddOpenTelemetry()
+       .WithMetrics(meterProviderBuilder => {
+           meterProviderBuilder.AddPrometheusExporter();
+           meterProviderBuilder.AddMeter("Microsoft.AspNetCore.Hosting",
+               "Microsoft.AspNetCore.Server.Kestrel");
+           meterProviderBuilder.AddView("http.server.request.duration",
+               new ExplicitBucketHistogramConfiguration {
+                   Boundaries = new double[] {
+                       0, 0.005, 0.01, 0.025, 0.05,
+                       0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10
+                   }
+               });
+       });
+
 Di.Build(builder);
 
 var app = builder.Build();
@@ -77,6 +92,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapPrometheusScrapingEndpoint();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

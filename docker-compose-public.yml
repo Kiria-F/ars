@@ -20,6 +20,29 @@
       dockerfile: Dockerfile
     ports:
       - 64208:8080
+  
+  prometheus:
+    image: prom/prometheus
+    restart: on-failure
+    ports:
+      - 64209:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+  
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+#    environment:
+#      - GF_SERVER_ROOT_URL=http://localhost:64203/grafana
+#      - GF_INSTALL_PLUGINS=grafana-clock-panel
+    ports:
+      - 64203:3000
+    volumes:
+      - 'grafana-data:/var/lib/grafana'
 
 volumes:
-  postgres-data:
+  postgres-data: {}
+  prometheus-data: {}
+  grafana-data: {}
