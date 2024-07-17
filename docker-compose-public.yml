@@ -2,6 +2,7 @@
 
   postgres:
     image: postgres
+    container_name: postgres
     restart: always
     # set shared memory limit when using docker-compose
     shm_size: 128mb
@@ -14,6 +15,7 @@
 
   app:
     image: ars
+    container_name: app
     restart: on-failure
     build:
       context: .
@@ -23,6 +25,7 @@
   
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     restart: on-failure
     ports:
       - 64209:9090
