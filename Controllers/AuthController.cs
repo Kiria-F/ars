@@ -13,7 +13,7 @@ public class AuthController(AuthService authService) : Controller {
     public IActionResult Login([FromBody] UserLoginDto userLogin) {
         var userResult = authService.Authenticate(userLogin);
         if (userResult.Failure)
-            return Unauthorized(userResult.Message);
+            return Unauthorized(userResult.ErrorMessage);
         return Ok(new { token = authService.GenerateToken(userLogin.Username) });
     }
 
@@ -23,7 +23,7 @@ public class AuthController(AuthService authService) : Controller {
     public IActionResult LoginByToken([FromBody] string token) {
         var userResult = authService.Authenticate(token);
         if (userResult.Failure)
-            return Unauthorized(userResult.Message);
+            return Unauthorized(userResult.ErrorMessage);
         return Ok(new { name = userResult.Value!.Name });
     }
 
@@ -33,7 +33,7 @@ public class AuthController(AuthService authService) : Controller {
     public IActionResult Register([FromBody] UserRegisterDto userRegister) {
         var userResult = authService.Register(userRegister);
         if (userResult.Failure)
-            return BadRequest(userResult.Message);
+            return BadRequest(userResult.ErrorMessage);
         return Ok(new { token = authService.GenerateToken(userResult.Value!.Username) });
     }
 }
