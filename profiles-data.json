@@ -7,6 +7,12 @@
         "HOST": "allrensys",
         "DB_PORT": "5432"
       }
+    },
+    {
+      "target": "appsettings.json",
+      "variables": {
+        "DB_PORT": "5432"
+      }
     }
   ],
   "local": [
@@ -16,6 +22,12 @@
         "HOST": "localhost",
         "DB_PORT": "64205"
       }
+    },
+    {
+      "target": "appsettings.json",
+      "variables": {
+        "DB_PORT": "64205"
+      }
     }
   ],
   "local-containerized": [
@@ -23,6 +35,12 @@
       "target": "docker-compose.yml",
       "variables": {
         "HOST": "localhost",
+        "DB_PORT": "5432"
+      }
+    },
+    {
+      "target": "appsettings.json",
+      "variables": {
         "DB_PORT": "5432"
       }
     }
