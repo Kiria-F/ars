@@ -7,7 +7,7 @@ fi
 cp docker-compose-public.yml docker-compose.yml
 cp appsettings-public.json appsettings.json
 
-for file in profile-data.json secrets.json; do
+for file in profiles-data.json secrets.json; do
     for profile in shared $1; do
         for config_index in $( seq 0 $(( $(jq -r ".[\"$profile\"] | length" $file ) - 1 )) ); do
             target=$( jq -r ".[\"$profile\"][$config_index][\"target\"]" $file )
