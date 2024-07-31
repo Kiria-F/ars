@@ -8,5 +8,13 @@ providers:
   docker:
     exposedByDefault: false
     
+certificatesResolvers:
+  letsEncrypt:
+    acme:
+      email: kiriakov.f.m@example.com
+      storage: acme.json
+      httpChallenge:
+        entryPoint: web
+    
 api:
   dashboard: true

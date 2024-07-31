@@ -3,7 +3,7 @@
   postgres:
     image: postgres
     container_name: postgres
-    restart: always
+    restart: on-failure
     # set shared memory limit when using docker-compose
     shm_size: 128mb
     environment:
@@ -16,6 +16,8 @@
       - traefik.enable=true
       - traefik.http.routers.postgres.entrypoints=web
       - traefik.http.routers.postgres.rule=Host(`db.allrensys.com`)
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
 
   app:
     image: ars
@@ -30,6 +32,8 @@
       - traefik.enable=true
       - traefik.http.routers.ars.entrypoints=web
       - traefik.http.routers.ars.rule=Host(`allrensys.com`)
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
   
   prometheus:
     image: prom/prometheus
@@ -44,7 +48,7 @@
   grafana:
     image: grafana/grafana
     container_name: grafana
-    restart: unless-stopped
+    restart: on-failure
     #    environment:
     #      - GF_SERVER_ROOT_URL=http://localhost:64203/grafana
     #      - GF_INSTALL_PLUGINS=grafana-clock-panel
@@ -56,10 +60,13 @@
       - traefik.enable=true
       - traefik.http.routers.grafana.entrypoints=web
       - traefik.http.routers.grafana.rule=Host(`grafana.allrensys.com`)
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
 
   traefik:
     image: traefik:v3.1
     container_name: traefik
+    restart: no
     command:
     ports:
       - "80:80"
@@ -72,12 +79,11 @@
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
     labels:
       - traefik.enable=true
-#       - traefik.http.routers.traefik.entrypoints=https
+      - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.rule=Host(`traefik.allrensys.com`)
-#       - traefik.http.routers.traefik.tls=true
-#       - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.services.traefik-traefik.loadbalancer.server.port=888
     profiles: [ ]
 
 volumes:
