@@ -10,6 +10,8 @@
       POSTGRES_PASSWORD: %DB_PASSWORD%
     ports:
       - 64205:5432
+    networks:
+      - ars
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -22,6 +24,8 @@
       dockerfile: Dockerfile
     ports:
       - 64208:8080
+    networks:
+      - ars
   
   prometheus:
     image: prom/prometheus
@@ -29,6 +33,8 @@
     restart: on-failure
     ports:
       - 64209:9090
+    networks:
+      - ars
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
@@ -37,15 +43,43 @@
     image: grafana/grafana
     container_name: grafana
     restart: unless-stopped
-#    environment:
-#      - GF_SERVER_ROOT_URL=http://localhost:64203/grafana
-#      - GF_INSTALL_PLUGINS=grafana-clock-panel
+    #    environment:
+    #      - GF_SERVER_ROOT_URL=http://localhost:64203/grafana
+    #      - GF_INSTALL_PLUGINS=grafana-clock-panel
     ports:
       - 64203:3000
+    networks:
+      - ars
     volumes:
       - 'grafana-data:/var/lib/grafana'
 
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik
+    command: --api.dashboard=true --providers.docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - ars
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - traefik.enable=true
+#      - traefik.docker.network=ars
+#       - traefik.http.routers.traefik.entrypoints=https
+      - traefik.http.routers.traefik.rule=Host(`traefik.allrensys.com`)
+#       - traefik.http.routers.traefik.tls=true
+#       - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.services.traefik-traefik.loadbalancer.server.port=888
+    profiles: [ ]
+
 volumes:
-  postgres-data: {}
-  prometheus-data: {}
-  grafana-data: {}
+  postgres-data: { }
+  prometheus-data: { }
+  grafana-data: { }
+
+networks:
+  ars:
+    name: ars
