@@ -12,12 +12,12 @@
       - ars
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.postgres.entrypoints=web
-      - traefik.http.routers.postgres.rule=Host(`db.allrensys.com`)
-      - traefik.http.routers.postgres.tls=true
-      - traefik.http.routers.postgres.tls.certresolver=letsEncrypt
+#    labels:
+#      - traefik.enable=true
+#      - traefik.http.routers.postgres.entrypoints=websecure
+#      - traefik.http.routers.postgres.rule=Host(`db.allrensys.com`)
+#      - traefik.http.routers.postgres.tls=true
+#      - traefik.http.routers.postgres.tls.certresolver=letsEncrypt
 
   app:
     image: ars
@@ -30,7 +30,7 @@
       - ars
     labels:
       - traefik.enable=true
-      - traefik.http.routers.app.entrypoints=web
+      - traefik.http.routers.app.entrypoints=websecure
       - traefik.http.routers.app.rule=Host(`allrensys.com`)
       - traefik.http.routers.app.tls=true
       - traefik.http.routers.app.tls.certresolver=letsEncrypt
@@ -56,12 +56,12 @@
       - ars
     volumes:
       - 'grafana-data:/var/lib/grafana'
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.grafana.entrypoints=web
-      - traefik.http.routers.grafana.rule=Host(`grafana.allrensys.com`)
-      - traefik.http.routers.grafana.tls=true
-      - traefik.http.routers.grafana.tls.certresolver=letsEncrypt
+#    labels:
+#      - traefik.enable=true
+#      - traefik.http.routers.grafana.entrypoints=websecure
+#      - traefik.http.routers.grafana.rule=Host(`grafana.allrensys.com`)
+#      - traefik.http.routers.grafana.tls=true
+#      - traefik.http.routers.grafana.tls.certresolver=letsEncrypt
 
   traefik:
     image: traefik:v3.1
