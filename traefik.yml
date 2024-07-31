@@ -3,18 +3,24 @@
     address: :80
   websecure:
     address: :443
+    
+http:
+  middlewares:
+    websecureRedirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
 
 providers:
   docker:
     exposedByDefault: false
-    
+
 certificatesResolvers:
   letsEncrypt:
     acme:
       email: kiriakov.f.m@gmail.com
       storage: acme.json
-      httpChallenge:
-        entryPoint: web
-    
+      tlsChallenge: { }
+
 api:
   dashboard: true
