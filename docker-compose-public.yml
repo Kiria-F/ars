@@ -22,10 +22,14 @@
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - 64208:8080
+#    ports:
+#      - 64208:8080
     networks:
       - ars
+    labels:
+      - traefik.http.routers.ars.entrypoints=web
+      - traefik.http.routers.ars.rule=Host(`allrensys.com`)
+#      - traefik.http.services.ars.loadbalancer.server.port=8080
   
   prometheus:
     image: prom/prometheus
@@ -56,17 +60,18 @@
   traefik:
     image: traefik:v3.1
     container_name: traefik
-    command: --api.dashboard=true --providers.docker
+    command:
     ports:
       - "80:80"
       - "8080:8080"
     networks:
       - ars
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/traefik/acme.json:/acme.json
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
     labels:
       - traefik.enable=true
-#      - traefik.docker.network=ars
 #       - traefik.http.routers.traefik.entrypoints=https
       - traefik.http.routers.traefik.rule=Host(`traefik.allrensys.com`)
 #       - traefik.http.routers.traefik.tls=true
