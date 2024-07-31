@@ -1,0 +1,30 @@
+{
+  "shared": [],
+  "remote": [
+    {
+      "target": "docker-compose.yml",
+      "variables": {
+        "HOST": "allrensys",
+        "DB_PORT": "5432"
+      }
+    }
+  ],
+  "local": [
+    {
+      "target": "docker-compose.yml",
+      "variables": {
+        "HOST": "localhost",
+        "DB_PORT": "64205"
+      }
+    }
+  ],
+  "local-containerized": [
+    {
+      "target": "docker-compose.yml",
+      "variables": {
+        "HOST": "localhost",
+        "DB_PORT": "5432"
+      }
+    }
+  ]
+}

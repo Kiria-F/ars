@@ -1,42 +1,24 @@
 ﻿#!/usr/bin/bash
 
-for file_i in $( seq 0 $(( $(jq -r ".[\"$1\"] | length" secrets.json ) - 1 )) ); do
-    target=$( jq -r ".[\"$1\"][$file_i][\"target\"]" secrets.json )
-    if [[ -e "$target" ]]; then
-      rm "$target"
-    fi
-done
-for file_i in $( seq 0 $(( $(jq -r ".[\"shared\"] | length" secrets.json ) - 1 )) ); do
-    target=$( jq -r ".[\"shared\"][$file_i][\"target\"]" secrets.json )
-    if [[ -e "$target" ]]; then
-      rm "$target"
-    fi
-done
-for file_i in $( seq 0 $(( $(jq -r ".[\"$1\"] | length" secrets.json ) - 1 )) ); do
-    filename=$( jq -r ".[\"$1\"][$file_i][\"filename\"]" secrets.json )
-    target=$( jq -r ".[\"$1\"][$file_i][\"target\"]" secrets.json )
-    keys_count=$( jq -r ".[\"$1\"][$file_i][\"keys\"] | length" secrets.json )
-    if [[ ! -e "$target" ]]; then
-      cp "$filename" "$target"
-    fi
-    for key_i in $( seq 0 $(( keys_count - 1 )) ); do
-        key=$( jq -r ".[\"$1\"][$file_i][\"keys\"] | keys | .[$key_i]" secrets.json )
-        value=$( jq -r ".[\"$1\"][$file_i][\"keys\"][\"$key\"]" secrets.json )
-        value=${value//\//\\\/}
-        sed -i "s/%$key%/$value/" "$target"
+if [ -z "$1" ]; then
+    echo "Warning: profile is not provided."
+fi
+
+cp docker-compose-public.yml docker-compose.yml
+cp appsettings-public.json appsettings.json
+
+for file in profile-data.json secrets.json; do
+    for profile in shared $1; do
+        for config_index in $( seq 0 $(( $(jq -r ".[\"$profile\"] | length" $file ) - 1 )) ); do
+            target=$( jq -r ".[\"$profile\"][$config_index][\"target\"]" $file )
+            variables_count=$( jq -r ".[\"$profile\"][$config_index][\"variables\"] | length" $file )
+            for variable_i in $( seq 0 $(( variables_count - 1 )) ); do
+                variable=$( jq -r ".[\"$profile\"][$config_index][\"variables\"] | keys | .[$variable_i]" $file )
+                value=$( jq -r ".[\"$profile\"][$config_index][\"variables\"][\"$variable\"]" $file )
+                value=${value//\//\\\/}
+                sed -i "s/%$variable%/$value/" "$target"
+            done
+        done
     done
 done
-for file_i in $( seq 0 $(( $(jq -r ".[\"shared\"] | length" secrets.json ) - 1 )) ); do
-    filename=$( jq -r ".[\"shared\"][$file_i][\"filename\"]" secrets.json )
-    target=$( jq -r ".[\"shared\"][$file_i][\"target\"]" secrets.json )
-    keys_count=$( jq -r ".[\"shared\"][$file_i][\"keys\"] | length" secrets.json )
-    if [[ ! -e "$target" ]]; then
-      cp "$filename" "$target"
-    fi
-    for key_i in $( seq 0 $(( keys_count - 1 )) ); do
-        key=$( jq -r ".[\"shared\"][$file_i][\"keys\"] | keys | .[$key_i]" secrets.json )
-        value=$( jq -r ".[\"shared\"][$file_i][\"keys\"][\"$key\"]" secrets.json )
-        value=${value//\//\\\/}
-        sed -i "s/%$key%/$value/" "$target"
-    done
-done
+echo "Done"
