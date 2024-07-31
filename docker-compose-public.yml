@@ -27,8 +27,6 @@
     labels:
       - traefik.enable=true
       - traefik.http.routers.app.rule=Host(`%HOST%.com`)
-      - traefik.http.routers.app.tls=true
-      - traefik.http.routers.app.tls.certresolver=letsEncrypt
   
   prometheus:
     image: prom/prometheus
@@ -53,8 +51,6 @@
     labels:
       - traefik.enable=true
       - traefik.http.routers.grafana.rule=Host(`grafana.%HOST%.com`)
-      - traefik.http.routers.grafana.tls=true
-      - traefik.http.routers.grafana.tls.certresolver=letsEncrypt
 
   traefik:
     image: traefik:v3.1
@@ -73,8 +69,6 @@
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.%HOST%.com`)
-      - traefik.http.routers.traefik.tls=true
-      - traefik.http.routers.traefik.tls.certresolver=letsEncrypt
       - traefik.http.routers.traefik.service=api@internal
 
 volumes:
