@@ -25,8 +25,7 @@ builder.Services.AddSingleton(tokenValidationParameters);
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => { options.TokenValidationParameters = tokenValidationParameters; });
-builder.Services.AddDbContext<ApplicationDbContext>(
-    options => { options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")); });
+builder.Services.AddDbContext<ApplicationDbContext>(options => { options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")); });
 builder.Services.AddSwaggerGen(
     options => {
         options.SwaggerDoc(
@@ -72,9 +71,9 @@ builder
             meterProviderBuilder.AddView(
                 "http.server.request.duration",
                 new ExplicitBucketHistogramConfiguration {
-                    Boundaries = new double[] {
+                    Boundaries = [
                         0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10
-                    }
+                    ]
                 });
         });
 
